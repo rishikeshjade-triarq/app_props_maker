@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Properties Updater</title>
+</head>
+<body>
+  <h1>Properties Updater</h1>
+  
+  <textarea id="properties" rows="10" cols="50" placeholder="Paste content of application.properties here"></textarea>
+  <br>
+  <textarea id="configMap" rows="10" cols="50" placeholder="Paste content of Kubernetes ConfigMap here"></textarea>
+  <br>
+  <button onclick="updateProperties()">Update Properties</button>
+  
+  <h2>Updated application.properties:</h2>
+  <textarea id="updatedProperties" rows="10" cols="50" readonly></textarea>
+  
+  <script>
+    function updateProperties() {
+      var propertiesContent = document.getElementById("properties").value;
+      var configMapContent = document.getElementById("configMap").value;
+      var updatedProperties = updatePropertiesContent(propertiesContent, configMapContent);
+      document.getElementById("updatedProperties").value = updatedProperties;
+    }
+
+    function parseConfigMap(configMapContent) {
+      var configMap = {};
+      var lines = configMapContent.split(/\r?\n/);
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (line) {
+          var parts = line.split(":");
+          if (parts.length >= 2) {
+            var key = parts[0].trim();
+            var value = parts.slice(1).join(":").trim().replace(/"/g, ''); // Remove double quotes
+            configMap[key] = value;
+          }
+        }
+      }
+      return configMap;
+    }
+
+    function updatePropertiesContent(propertiesContent, configMapContent) {
+      var configMap = parseConfigMap(configMapContent);
+      var updatedContent = "";
+      var lines = propertiesContent.split(/\r?\n/);
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        for (var key in configMap) {
+          var placeholder = "${" + key + "}";
+          if (line.includes(placeholder)) {
+            line = line.replace(placeholder, configMap[key]);
+          }
+        }
+        updatedContent += line + "\n";
+      }
+      return updatedContent;
+    }
+  </script>
+</body>
+</html>
