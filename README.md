@@ -8,7 +8,7 @@ Automates the replacement of placeholders in the application.properties file wit
 
 Flexible and customizable to handle different placeholder patterns and ConfigMap structures.
 
-Written in Python for efficiency and reliability.
+Written in HTML for efficiency and reliability.
 
 Usage:
 
